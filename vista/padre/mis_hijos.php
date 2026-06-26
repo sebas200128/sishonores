@@ -62,7 +62,7 @@ $hijos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </p>
                             </div>
                             <div class="card-footer bg-white border-top">
-                                <a href="../director/boletas_pdf.php?id_alumno=<?php echo $hijo['id_alumno']; ?>" 
+                                <a href="../../director/boletas_pdf.php?id_alumno=<?php echo $hijo['id_alumno']; ?>" 
                                    target="_blank" 
                                    class="btn btn-sm btn-primary w-100">
                                     <i class="fas fa-file-pdf"></i> Ver Boleta de Notas

@@ -39,7 +39,7 @@ $alumnos = $stmt_alumnos->fetchAll(PDO::FETCH_ASSOC);
                 <i class="fas fa-search"></i> Seleccionar Alumno
             </div>
             <div class="card-body">
-                <form method="GET" action="../director/boletas_pdf.php" target="_blank" class="row g-3">
+                <form method="GET" action="../../director/boletas_pdf.php" target="_blank" class="row g-3">
                     <div class="col-md-6">
                         <label>Alumno</label>
                         <select name="id_alumno" class="form-select" required>

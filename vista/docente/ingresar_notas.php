@@ -75,7 +75,12 @@ $bimestre = $_GET['bimestre'] ?? 1;
                     
                     <?php if($curso_seleccionado > 0): ?>
                     <div class="card">
-                        <div class="card-header bg-dark text-white"><i class="fas fa-table"></i> Registro de Notas</div>
+                        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-table"></i> Registro de Notas</span>
+                            <a href="reporte_notas_pdf.php?curso=<?php echo $curso_seleccionado; ?>&bimestre=<?php echo $bimestre; ?>" target="_blank" class="btn btn-danger btn-sm">
+                                <i class="fas fa-file-pdf"></i> Exportar PDF
+                            </a>
+                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered">
@@ -139,7 +144,7 @@ $bimestre = $_GET['bimestre'] ?? 1;
         }
 
         function guardarTodasNotas() { let datos=[]; $('.nota-row').each(function(){ let row=$(this); let templates_notas=[]; row.find('.nota-input').each(function(){templates_notas.push($(this).val()||0);}); datos.push({id_alumno:row.data('id'),notas:templates_notas,observacion:row.find('.observacion').val()}); });
-            $.ajax({url:'../../controller/NotaController.php',method:'POST',data:{action:'guardar_notas',id_docente_curso_aula:cursoId,bimestre:bimestre,datos:JSON.stringify(datos)},success:function(r){if(r.success){alert('Notas guardadas');cargarAlumnos();}else{alert('Error');}}}); }
+            $.ajax({url:'../../controller/NotaController.php',method:'POST',data:{action:'guardar_notas',id_docente_curso_aula:cursoId,bimestre:bimestre,datos:JSON.stringify(datos)},success:function(r){if(r.success){alert('Notas guardadas');cargarAlumnos();}else{alert(r.message || 'Error al guardar notas');}}}); }
         $(document).ready(function(){if(cursoId>0)cargarAlumnos();});
     </script>
 </body>

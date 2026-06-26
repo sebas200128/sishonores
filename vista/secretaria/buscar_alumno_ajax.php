@@ -11,7 +11,7 @@ if($dni){
         foreach($alumnos as $a){
             $p=$a['promedio']??0; $letra=$p>=18?'AD':($p>=14?'A':($p>=11?'B':'C')); $color=$p>=18?'success':($p>=14?'warning':($p>=11?'info':'danger'));
             echo '<tr><td>'.$a['apellidos'].' '.$a['nombres'].'</td><td>'.$a['dni'].'</td><td>'.$a['nombre_grado'].'</td><td>'.$a['nombre_seccion'].'</td><td>'.number_format($p,1).' <span class="badge bg-'.$color.'">'.$letra.'</span></td>';
-            echo '<td><a href="ver_notas_detalle.php?id='.$a['id_alumno'].'" class="btn btn-sm btn-primary">Ver Notas</a> <a href="../director/boletas_pdf.php?id_alumno='.$a['id_alumno'].'&bimestre=0" target="_blank" class="btn btn-sm btn-danger">Boleta</a></td></tr>';
+            echo '<td><a href="ver_notas_detalle.php?id='.$a['id_alumno'].'" class="btn btn-sm btn-primary">Ver Notas</a> <a href="../../director/boletas_pdf.php?id_alumno='.$a['id_alumno'].'&bimestre=0" target="_blank" class="btn btn-sm btn-danger">Boleta</a></td></tr>';
         }
         echo '</tbody></table>';
     } else echo '<div class="alert alert-warning">No se encontraron alumnos</div>';

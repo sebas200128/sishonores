@@ -40,6 +40,9 @@ $aulas = $stmt_aulas->fetchAll(PDO::FETCH_ASSOC);
     <?php include '../includes/sidebar.php'; ?>
     <div class="container-fluid">
         <h1 class="mb-4"><i class="fas fa-chalkboard-user"></i> Asignar Docentes a Cursos</h1>
+        <a href="reporte_asignaciones_pdf.php" target="_blank" class="btn btn-danger mb-4">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
         
         <div class="row">
             <div class="col-md-5">

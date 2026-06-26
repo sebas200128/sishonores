@@ -40,6 +40,9 @@ $aulas = $stmt_aulas->fetchAll(PDO::FETCH_ASSOC);
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalAlumno">
             <i class="fas fa-plus"></i> Nuevo Alumno
         </button>
+        <a href="reporte_alumnos_pdf.php" target="_blank" class="btn btn-danger mb-3 ms-2">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
         
         <div class="table-responsive">
             <table class="table table-bordered table-hover">

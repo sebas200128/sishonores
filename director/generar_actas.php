@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php';
+require_once '../util/Database.php';
 if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'SuperUsuario' && $_SESSION['user_role'] != 'Director')) {
     header('Location: ../login.php');
     exit;
@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'SuperUsuario' &&
 
 $database = new Database();
 $db = $database->getConnection();
-
 $query_grados = "SELECT id_grado, nombre_grado FROM grados ORDER BY orden";
 $stmt_grados = $db->prepare($query_grados);
 $stmt_grados->execute();
@@ -21,7 +20,7 @@ $grados = $stmt_grados->fetchAll(PDO::FETCH_ASSOC);
     <title>Generar Actas - SisHonores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars(app_url('css/style.css')); ?>">
 </head>
 <body>
     <?php include '../includes/sidebar.php'; ?>
