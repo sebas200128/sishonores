@@ -1,7 +1,7 @@
 <?php
 require_once '../util/Database.php';
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+    header('Location: ../vista/login.php');
     exit;
 }
 

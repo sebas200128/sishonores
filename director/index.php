@@ -1,7 +1,7 @@
 <?php
-require_once '../config/database.php';
+require_once '../util/Database.php';
 if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'SuperUsuario' && $_SESSION['user_role'] != 'Director')) {
-    header('Location: ../login.php');
+    header('Location: ../vista/login.php');
     exit;
 }
 include '../includes/header.php';
