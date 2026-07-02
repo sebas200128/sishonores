@@ -94,8 +94,7 @@ $aulas = $stmt_aulas->fetchAll(PDO::FETCH_ASSOC);
                             <div class="col-md-6"><div class="mb-3"><label>Apellidos</label><input type="text" class="form-control" name="apellidos" required></div></div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6"><div class="mb-3"><label>Fecha Nacimiento</label><input type="date" class="form-control" name="fecha_nacimiento"></div></div>
-                            <div class="col-md-6"><div class="mb-3"><label>Teléfono</label><input type="text" class="form-control" name="telefono"></div></div>
+                            <div class="col-md-12"><div class="mb-3"><label>Fecha Nacimiento</label><input type="date" class="form-control" name="fecha_nacimiento"></div></div>
                         </div>
                         <div class="row">
                             <div class="col-md-6"><div class="mb-3"><label>Nombre Apoderado</label><input type="text" class="form-control" name="nombre_apoderado"></div></div>
@@ -155,7 +154,6 @@ $aulas = $stmt_aulas->fetchAll(PDO::FETCH_ASSOC);
                 $('input[name="apellidos"]').val(alumno.apellidos);
                 $('input[name="dni"]').val(alumno.dni);
                 $('input[name="fecha_nacimiento"]').val(alumno.fecha_nacimiento);
-                $('input[name="telefono"]').val(alumno.telefono);
                 $('input[name="nombre_apoderado"]').val(alumno.nombre_apoderado);
                 $('input[name="telefono_apoderado"]').val(alumno.telefono_apoderado);
                 $('input[name="email_apoderado"]').val(alumno.email_apoderado);

@@ -100,11 +100,7 @@ foreach ($aulas as $aula) {
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Teléfono de contacto (Opcional)</label>
-                                    <input type="text" class="form-control" name="telefono" placeholder="Ej: 987654321">
-                                </div>
-                                <div class="col-md-6 mb-4">
+                                <div class="col-md-12 mb-4">
                                     <label class="form-label">Aula de Destino (Grado - Sección)</label>
                                     <select class="form-select" name="id_aula" required>
                                         <option value="">Seleccionar Aula...</option>
