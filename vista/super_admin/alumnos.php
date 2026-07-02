@@ -130,12 +130,18 @@ $aulas = $stmt_aulas->fetchAll(PDO::FETCH_ASSOC);
                 data: $('#formAlumno').serialize() + '&action=guardar',
                 dataType: 'json',
                 success: function(r){
-                    if (r.padre_creado) {
-                        alert('✓ Alumno creado exitosamente\n\n' +
-                              'Acceso Padre de Familia:\n' +
-                              'Usuario: ' + r.dni_padre + '\n' +
-                              'Contraseña: ' + r.password + '\n' +
-                              'Apoderado: ' + r.apoderado);
+                    if (r.success) {
+                        if (r.dni_padre && r.password) {
+                            alert('✓ Alumno guardado exitosamente\n\n' +
+                                  (r.mensaje || 'Acceso Padre de Familia:') + '\n' +
+                                  'Usuario: ' + r.dni_padre + '\n' +
+                                  'Contraseña: ' + r.password + '\n' +
+                                  'Apoderado: ' + r.apoderado);
+                        } else {
+                            alert('✓ Alumno guardado exitosamente');
+                        }
+                    } else {
+                        alert(r.message || 'Error al guardar alumno');
                     }
                     location.reload();
                 }

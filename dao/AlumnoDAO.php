@@ -116,10 +116,7 @@ class AlumnoDAO {
             if ($id <= 0) {
                 $alumno_id = (int)$this->db->lastInsertId();
                 $alumno->setIdAlumno($alumno_id);
-
                 // Generar acceso del Padre de Familia automáticamente
-                $password_padre = $this->generateRandomPassword();
-
                 // Buscar rol PadreFamilia
                 $query_rol = "SELECT id_rol FROM roles WHERE nombre_rol = 'PadreFamilia' LIMIT 1";
                 $stmt_rol = $this->db->prepare($query_rol);
@@ -127,46 +124,79 @@ class AlumnoDAO {
                 $id_rol_padre = (int)$stmt_rol->fetchColumn();
 
                 if ($id_rol_padre > 0) {
-                    $dni_padre = $dni; // El DNI del estudiante es el usuario del padre
-                    $hash = password_hash($password_padre, PASSWORD_DEFAULT);
-                    $apellido_apoderado = 'Apoderado';
+                    // Verificar si ya existe un padre con el mismo correo electrónico
+                    $query_existente = "SELECT pf.id_padre, u.dni, pf.password_generada, u.nombres 
+                                        FROM padres_familia pf 
+                                        JOIN usuarios u ON pf.id_usuario = u.id_usuario 
+                                        WHERE u.email = :email AND u.id_rol = :id_rol LIMIT 1";
+                    $stmt_existente = $this->db->prepare($query_existente);
+                    $stmt_existente->bindValue(':email', $email_apoderado, PDO::PARAM_STR);
+                    $stmt_existente->bindValue(':id_rol', $id_rol_padre, PDO::PARAM_INT);
+                    $stmt_existente->execute();
+                    $padre_existente = $stmt_existente->fetch(PDO::FETCH_ASSOC);
 
-                    // Insertar usuario general
-                    $query_usuario = "INSERT INTO usuarios (nombres, apellidos, email, dni, telefono, id_rol, password_hash, activo) 
-                                      VALUES (:nombres, :apellidos, :email, :dni, :telefono, :id_rol, :password, 1)";
-                    $stmt_usuario = $this->db->prepare($query_usuario);
-                    $stmt_usuario->bindValue(':nombres', $nombre_apoderado, PDO::PARAM_STR);
-                    $stmt_usuario->bindValue(':apellidos', $apellido_apoderado, PDO::PARAM_STR);
-                    $stmt_usuario->bindValue(':email', $email_apoderado, PDO::PARAM_STR);
-                    $stmt_usuario->bindValue(':dni', $dni_padre, PDO::PARAM_STR);
-                    $stmt_usuario->bindValue(':telefono', $telefono_apoderado, PDO::PARAM_STR);
-                    $stmt_usuario->bindValue(':id_rol', $id_rol_padre, PDO::PARAM_INT);
-                    $stmt_usuario->bindValue(':password', $hash, PDO::PARAM_STR);
-                    $stmt_usuario->execute();
+                    if ($padre_existente) {
+                        $padre_id = (int)$padre_existente['id_padre'];
+                        $dni_padre = $padre_existente['dni'];
+                        $password_padre = $padre_existente['password_generada'];
+                        $nombre_apoderado = $padre_existente['nombres'];
 
-                    $usuario_id = (int)$this->db->lastInsertId();
+                        // Insertar relación alumno_padre
+                        $query_alumno_padre = "INSERT INTO alumno_padre (id_alumno, id_padre) VALUES (:id_alumno, :id_padre)";
+                        $stmt_alumno_padre = $this->db->prepare($query_alumno_padre);
+                        $stmt_alumno_padre->bindValue(':id_alumno', $alumno_id, PDO::PARAM_INT);
+                        $stmt_alumno_padre->bindValue(':id_padre', $padre_id, PDO::PARAM_INT);
+                        $stmt_alumno_padre->execute();
 
-                    // Insertar padre de familia
-                    $query_padre = "INSERT INTO padres_familia (id_usuario, password_generada) VALUES (:id_usuario, :password)";
-                    $stmt_padre = $this->db->prepare($query_padre);
-                    $stmt_padre->bindValue(':id_usuario', $usuario_id, PDO::PARAM_INT);
-                    $stmt_padre->bindValue(':password', $password_padre, PDO::PARAM_STR);
-                    $stmt_padre->execute();
+                        $resultado['padre_creado'] = true; // Mantener true para que la UI de éxito de credenciales se muestre
+                        $resultado['mensaje'] = "✓ Alumno vinculado a Apoderado existente automáticamente";
+                        $resultado['apoderado'] = $nombre_apoderado;
+                        $resultado['dni_padre'] = $dni_padre;
+                        $resultado['password'] = $password_padre;
+                    } else {
+                        // Crear nuevo padre
+                        $password_padre = $this->generateRandomPassword();
+                        $dni_padre = $dni; // El DNI del estudiante es el usuario del padre
+                        $hash = password_hash($password_padre, PASSWORD_DEFAULT);
+                        $apellido_apoderado = 'Apoderado';
 
-                    $padre_id = (int)$this->db->lastInsertId();
+                        // Insertar usuario general
+                        $query_usuario = "INSERT INTO usuarios (nombres, apellidos, email, dni, telefono, id_rol, password_hash, activo) 
+                                          VALUES (:nombres, :apellidos, :email, :dni, :telefono, :id_rol, :password, 1)";
+                        $stmt_usuario = $this->db->prepare($query_usuario);
+                        $stmt_usuario->bindValue(':nombres', $nombre_apoderado, PDO::PARAM_STR);
+                        $stmt_usuario->bindValue(':apellidos', $apellido_apoderado, PDO::PARAM_STR);
+                        $stmt_usuario->bindValue(':email', $email_apoderado, PDO::PARAM_STR);
+                        $stmt_usuario->bindValue(':dni', $dni_padre, PDO::PARAM_STR);
+                        $stmt_usuario->bindValue(':telefono', $telefono_apoderado, PDO::PARAM_STR);
+                        $stmt_usuario->bindValue(':id_rol', $id_rol_padre, PDO::PARAM_INT);
+                        $stmt_usuario->bindValue(':password', $hash, PDO::PARAM_STR);
+                        $stmt_usuario->execute();
 
-                    // Insertar relación alumno_padre
-                    $query_alumno_padre = "INSERT INTO alumno_padre (id_alumno, id_padre) VALUES (:id_alumno, :id_padre)";
-                    $stmt_alumno_padre = $this->db->prepare($query_alumno_padre);
-                    $stmt_alumno_padre->bindValue(':id_alumno', $alumno_id, PDO::PARAM_INT);
-                    $stmt_alumno_padre->bindValue(':id_padre', $padre_id, PDO::PARAM_INT);
-                    $stmt_alumno_padre->execute();
+                        $usuario_id = (int)$this->db->lastInsertId();
 
-                    $resultado['padre_creado'] = true;
-                    $resultado['mensaje'] = "✓ Acceso Padre de Familia generado automáticamente";
-                    $resultado['apoderado'] = $nombre_apoderado;
-                    $resultado['dni_padre'] = $dni_padre;
-                    $resultado['password'] = $password_padre;
+                        // Insertar padre de familia
+                        $query_padre = "INSERT INTO padres_familia (id_usuario, password_generada) VALUES (:id_usuario, :password)";
+                        $stmt_padre = $this->db->prepare($query_padre);
+                        $stmt_padre->bindValue(':id_usuario', $usuario_id, PDO::PARAM_INT);
+                        $stmt_padre->bindValue(':password', $password_padre, PDO::PARAM_STR);
+                        $stmt_padre->execute();
+
+                        $padre_id = (int)$this->db->lastInsertId();
+
+                        // Insertar relación alumno_padre
+                        $query_alumno_padre = "INSERT INTO alumno_padre (id_alumno, id_padre) VALUES (:id_alumno, :id_padre)";
+                        $stmt_alumno_padre = $this->db->prepare($query_alumno_padre);
+                        $stmt_alumno_padre->bindValue(':id_alumno', $alumno_id, PDO::PARAM_INT);
+                        $stmt_alumno_padre->bindValue(':id_padre', $padre_id, PDO::PARAM_INT);
+                        $stmt_alumno_padre->execute();
+
+                        $resultado['padre_creado'] = true;
+                        $resultado['mensaje'] = "✓ Acceso Padre de Familia generado automáticamente";
+                        $resultado['apoderado'] = $nombre_apoderado;
+                        $resultado['dni_padre'] = $dni_padre;
+                        $resultado['password'] = $password_padre;
+                    }
                 }
             }
 

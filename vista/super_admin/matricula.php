@@ -165,7 +165,7 @@ foreach ($aulas as $aula) {
                     </h5>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted">Se ha registrado al alumno y se ha generado la cuenta de acceso para el Padre de Familia automáticamente con los siguientes datos:</p>
+                    <p class="text-muted" id="cred_mensaje">Se ha registrado al alumno y se ha generado la cuenta de acceso para el Padre de Familia automáticamente con los siguientes datos:</p>
                     
                     <div class="border rounded p-3 bg-light mb-3">
                         <div class="mb-2">
@@ -215,13 +215,16 @@ foreach ($aulas as $aula) {
             $('#btnMatricular').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...');
 
             $.ajax({
-                url: 'alumnos_crud.php',
+                url: '../../controller/AlumnoController.php',
                 method: 'POST',
-                data: $(this).serialize(),
+                data: $(this).serialize() + '&action=guardar',
                 dataType: 'json',
                 success: function(res) {
                     if (res.success) {
                         if (res.padre_creado) {
+                            if (res.mensaje) {
+                                $('#cred_mensaje').text(res.mensaje + ' con los siguientes datos:');
+                            }
                             $('#cred_apoderado').text(res.apoderado);
                             $('#cred_usuario').text(res.dni_padre);
                             $('#cred_password').text(res.password);

@@ -19,6 +19,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usuarioDAO = new UsuarioDAO($db);
     $user = $usuarioDAO->getByDni($dni);
     
+    if (!$user) {
+        // Fallback: Si no se encuentra el usuario directamente, buscar si es el DNI de un alumno
+        // y obtener el usuario apoderado asociado
+        $query_fallback = "SELECT u.*, r.nombre_rol 
+                           FROM usuarios u 
+                           JOIN roles r ON u.id_rol = r.id_rol
+                           JOIN padres_familia pf ON u.id_usuario = pf.id_usuario
+                           JOIN alumno_padre ap ON pf.id_padre = ap.id_padre
+                           JOIN alumnos a ON ap.id_alumno = a.id_alumno
+                           WHERE a.dni = :dni AND a.activo = 1 AND u.activo = 1 
+                           LIMIT 1";
+        $stmt_fallback = $db->prepare($query_fallback);
+        $stmt_fallback->bindValue(':dni', $dni, PDO::PARAM_STR);
+        $stmt_fallback->execute();
+        $user = $stmt_fallback->fetch(PDO::FETCH_ASSOC);
+    }
+    
     if ($user) {
         $loginExitoso = false;
         
